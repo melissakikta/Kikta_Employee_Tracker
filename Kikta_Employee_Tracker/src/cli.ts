@@ -232,7 +232,7 @@ function performActions(): void {
                 },
                   ])
               .then((response: EmployeeResponse) => {
-                const sql = 'INSERT INTO roles (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3)';
+                const sql = 'INSERT INTO employees (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4)';
                 const values = [response.first_name, response.last_name, response.role_id, response.manager_id];
       
                 pool.query(sql, values, (err: Error) => {
@@ -384,7 +384,7 @@ function performActions(): void {
                     r.title AS role 
                   FROM employees e
                   LEFT JOIN roles r ON e.role_id = r.id
-                  WHERE e.department_id = $1
+                  WHERE e.role_id = $1
                 `;
                 const values = [response.department_id];
           
