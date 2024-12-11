@@ -5,7 +5,7 @@ TypeScript command-line application that prompts for information on user options
 ## 📚 Description
 This application is designed to allow the user to access information about the business. Options include viewing tables of employee, role, and department information; adding employees, roles, and departments; viewing emplyees by manager and department; deleting departments, roles, and employees; and viewing a total budget by department.  
 
-A video tutorial can be found [here](https://drive.google.com/file/d/1RD-HuWyUbWBZ7rc2hKB-S1zRYbrDF4GG/view?usp=sharing)
+A video tutorial can be found [here](https://drive.google.com/file/d/1nGRM2oSELmLZ6qEQkkcaF6xz0PEmrMWx/view?usp=sharing)
 
 ## 🚀 Table of Contents
   * [Usage](#📝-Usage)

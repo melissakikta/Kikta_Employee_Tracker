@@ -13,7 +13,7 @@ VALUES (1, 'Designer', 65000),
        (3, 'Agent', 45000),
        (3, 'Lead Agent', 60000),
        (4, 'Maintance', 50000),
-       (4, 'Head Maintance', 80000),
+       (4, 'Head Maintance', 80000),git 
        (5, 'VP', 100000),
        (5, 'CEO', 200000);
 
