@@ -571,4 +571,6 @@ function performActions(): void {
     // Start the prompt loop
     promptUser();
   }
+   
+  performActions();
   
