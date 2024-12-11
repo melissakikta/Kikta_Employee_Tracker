@@ -1,12 +1,22 @@
 import inquirer from "inquirer";
-import express from 'express';
+// import express from 'express';
 import { QueryResult } from 'pg';
 import { pool, connectToDb } from './connection.js';
 await connectToDb();
 //const app = express();
 // Express middleware
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
+
+//interface to define responses
+interface DepartmentReponse {
+  departmentName: string;
+}
+
+interface PromptAnswers {
+  action: string;
+}
+
 
 function performActions(): void {
     const promptUser = (): void => {
@@ -36,7 +46,7 @@ function performActions(): void {
             ],
           },
         ])
-        .then((answers) => {
+        .then((answers: PromptAnswers) => {
           if (answers.action === 'Exit') {
             console.log('Goodbye!');
             return; // Exit the loop
@@ -88,7 +98,7 @@ function performActions(): void {
                   message: 'Enter the name of the new department:',
                 },
               ])
-              .then((response) => {
+              .then((response: DepartmentReponse) => {
                 const sql = 'INSERT INTO departments (department_name) VALUES ($1)';
                 const values = [response.departmentName];
   
@@ -114,7 +124,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'salary',
                   message: 'Enter the salary of the new role:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                       return !isNaN(parseFloat(input)) && parseFloat(input) > 0 ? true
                       : 'Please enter a valid positive number for the salary.';
                   }, 
@@ -123,7 +133,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'department_id',
                   message: 'Enter the department ID for the new role:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                       return !isNaN(parseInt(input)) && parseInt(input) > 0
                       ? true
                       : 'Please enter a valid department ID';
@@ -161,7 +171,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'role_id',
                   message: 'Enter the role ID for the new employee:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0 
                     ? true
                     : 'Please enter a valid department ID';
@@ -171,7 +181,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'manager_id',
                   message: 'Enter the manager ID for the new employee:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0? true
                     : 'Please enter a valid department ID';
                   },
@@ -198,7 +208,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'employee_id'
                   message: 'Enter the ID of the employee you wish to update:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                     ? true
                     : 'Please enter a valid employee ID.';
@@ -208,7 +218,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'update_role_id',
                   message: 'What is the new role ID for the employee?',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                     ? true
                     : 'Please enter a valid role ID.';
@@ -236,7 +246,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'employee_id'
                   message: 'Enter the ID of the employee you wish to update:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                     ? true
                     : 'Please enter a valid employee ID.';
@@ -246,7 +256,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'update_manager_id',
                   message: 'What is the new manager ID for the employee?',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                     ? true
                     : 'Please enter a valid role ID.';
@@ -273,7 +283,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'manager_id',
                   message: 'Enter the ID of the manager to view their employees:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                       ? true
                       : 'Please enter a valid manager ID (positive integer).';
@@ -312,7 +322,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'department_id',
                   message: 'Enter the ID of the department to view the employees:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                       ? true
                       : 'Please enter a valid department ID (positive integer).';
@@ -351,7 +361,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'department_id',
                   message: 'Enter the ID of the department you want to delete:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                       ? true
                       : 'Please enter a valid department ID (positive integer).';
@@ -392,7 +402,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'role_id',
                   message: 'Enter the ID of the role you want to delete:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                       ? true
                       : 'Please enter a valid role ID (positive integer).';
@@ -433,7 +443,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'employee_id',
                   message: 'Enter the ID of the employee you want to delete:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                       ? true
                       : 'Please enter a valid employee ID (positive integer).';
@@ -474,7 +484,7 @@ function performActions(): void {
                   type: 'input',
                   name: 'department_id',
                   message: 'Enter the ID of the department to calculate its total budget:',
-                  validate: (input) => {
+                  validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
                       ? true
                       : 'Please enter a valid department ID (positive integer).';

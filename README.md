@@ -14,7 +14,7 @@ A video tutorial can be found [here](https://drive.google.com/file/d/1RD-HuWyUbW
   * [License](#📃-license)
   * [Contact](#🗨️-contact)
 
-## 📝 Usage - Fix Pictures
+## 📝 Usage
 <strong>Using Employee Tracker</strong>
 
 This program is designed to be used as a command-line application to expand a current car application to include selections for trucks and motorbikes. It will then prompt the user for action prompts based on the selection of new or existing vehicles. 
