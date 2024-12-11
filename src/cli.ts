@@ -1,12 +1,7 @@
 import inquirer from "inquirer";
-// import express from 'express';
 import { QueryResult } from 'pg';
 import { pool, connectToDb } from './connection.js';
 await connectToDb();
-//const app = express();
-// Express middleware
-// app.use(express.urlencoded({ extended: false }));
-// app.use(express.json());
 
 //interface to define responses
 interface DepartmentReponse {
@@ -17,6 +12,55 @@ interface PromptAnswers {
   action: string;
 }
 
+interface RoleResponse {
+  title: string;
+  salary: string;
+  department_id: string;
+}
+
+interface EmployeeResponse {
+  first_name: string;
+  last_name: string;
+  role_id: number;
+  manager_id: number;
+}
+
+interface UpdateEmployeeResponse {
+  employee_id: number;
+  update_role_id: number;
+}
+
+interface UpdateEmployeeManager {
+  employee_id: number;
+  update_manager_id: number;
+}
+
+interface ViewEmployeeManager {
+  manager_id: number;
+}
+
+interface ViewEmployeeDepartment {
+  department_id: number;
+}
+
+interface DeleteDepartment {
+  department_id: number;
+  confirm_delete: boolean;
+}
+
+interface DeleteRole {
+  role_id: number;
+  confirm_delete: boolean;
+}
+
+interface DeleteEmployee {
+  employee_id: number;
+  confirm_delete: boolean;
+}
+
+interface ViewBudget {
+  department_id: number;
+}
 
 function performActions(): void {
     const promptUser = (): void => {
@@ -140,7 +184,7 @@ function performActions(): void {
                   },
                 },
               ])
-              .then((response) => {
+              .then((response: RoleResponse) => {
                 const sql = 'INSERT INTO roles (title, salary, department_id) VALUES ($1, $2, $3)';
                 const values = [response.title, parseFloat(response.salary), parseInt(response.department_id)];
   
@@ -187,9 +231,9 @@ function performActions(): void {
                   },
                 },
                   ])
-              .then((response) => {
+              .then((response: EmployeeResponse) => {
                 const sql = 'INSERT INTO roles (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3)';
-                const values = [response.title, parseFloat(response.salary), parseInt(response.department_id)];
+                const values = [response.first_name, response.last_name, response.role_id, response.manager_id];
       
                 pool.query(sql, values, (err: Error) => {
                   if (err) {
@@ -206,7 +250,7 @@ function performActions(): void {
               .prompt([
                 {
                   type: 'input',
-                  name: 'employee_id'
+                  name: 'employee_id',
                   message: 'Enter the ID of the employee you wish to update:',
                   validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
@@ -225,17 +269,18 @@ function performActions(): void {
                   },
                 },
               ])
-              .then((response) => {
+              .then((response: UpdateEmployeeResponse) => {
                 const sql = 'UPDATE employees SET role_id = $1 WHERE id = $2';
-                const values = [parseInt(response.update_role_id), parseInt(response.employee_id)];
+                const values = [response.update_role_id, response.employee_id];
 
-                StylePropertyMapReadOnly.query(sql, values, (err: Error) => {
+                pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
                     console.error('Error updating employee role:', err.message);
                   } else {
                     console.log(`Employee ID ${response.employee_id} updated to Role ID ${response.update_role_id} successfully.`);
+                    console.log(`Rows affected: ${result.rowCount}`);
                   }
-                  promptUser();
+                  promptUser(); // Re-prompt the user
                 });
               });
           } else if (answers.action === 'Update an Employee Manager') {
@@ -244,7 +289,7 @@ function performActions(): void {
               .prompt([
                 {
                   type: 'input',
-                  name: 'employee_id'
+                  name: 'employee_id',
                   message: 'Enter the ID of the employee you wish to update:',
                   validate: (input: string) => {
                     return !isNaN(parseInt(input)) && parseInt(input) > 0
@@ -263,18 +308,19 @@ function performActions(): void {
                   },
                 },
               ])
-              .then((response) => {
+              .then((response: UpdateEmployeeManager) => {
                 const sql = 'UPDATE employees SET manager_id = $1 WHERE id = $2';
-                const values = [parseInt(response.update_manager_id), parseInt(response.employee_id)];
+                const values = [response.update_manager_id, response.employee_id];
 
-                StylePropertyMapReadOnly.query(sql, values, (err: Error) => {
+                pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
                     console.error('Error updating employee role:', err.message);
                   } else {
-                    console.log(`Employee ID ${response.employee_id} updated to Manager ID ${response.update_manager_id} successfully.`);
+                    console.log(`Employee ID ${response.employee_id} updated to Role ID ${response.update_manager_id} successfully.`);
+                    console.log(`Rows affected: ${result.rowCount}`);
                   }
-                  promptUser();
-                });
+                  promptUser(); // Re-prompt the user
+                });                
               });
           } else if (answers.action === 'View Employees by Manager') {
             inquirer
@@ -290,7 +336,7 @@ function performActions(): void {
                   },
                 },
               ])
-              .then((response) => {
+              .then((response: ViewEmployeeManager) => {
                 const sql = `
                   SELECT 
                     e.id, 
@@ -301,7 +347,7 @@ function performActions(): void {
                   LEFT JOIN roles r ON e.role_id = r.id
                   WHERE e.manager_id = $1
                 `;
-                const values = [parseInt(response.manager_id)];
+                const values = [response.manager_id];
           
                 pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
@@ -329,7 +375,7 @@ function performActions(): void {
                   },
                 },
               ])
-              .then((response) => {
+              .then((response: ViewEmployeeDepartment) => {
                 const sql = `
                   SELECT 
                     e.id, 
@@ -340,7 +386,7 @@ function performActions(): void {
                   LEFT JOIN roles r ON e.role_id = r.id
                   WHERE e.department_id = $1
                 `;
-                const values = [parseInt(response.manager_id)];
+                const values = [response.department_id];
           
                 pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
@@ -374,7 +420,7 @@ function performActions(): void {
                   default: false,
                 },
               ])
-              .then((response) => {
+              .then((response: DeleteDepartment) => {
                 if (!response.confirm_delete) {
                   console.log('Department deletion canceled.');
                   promptUser(); // Re-prompt the user
@@ -382,7 +428,7 @@ function performActions(): void {
                 }
           
                 const sql = 'DELETE FROM departments WHERE id = $1';
-                const values = [parseInt(response.department_id)];
+                const values = [response.department_id];
           
                 pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
@@ -415,7 +461,7 @@ function performActions(): void {
                   default: false,
                 },
               ])
-              .then((response) => {
+              .then((response: DeleteRole) => {
                 if (!response.confirm_delete) {
                   console.log('Role deletion canceled.');
                   promptUser(); // Re-prompt the user
@@ -423,7 +469,7 @@ function performActions(): void {
                 }
           
                 const sql = 'DELETE FROM roles WHERE id = $1';
-                const values = [parseInt(response.role_id)];
+                const values = [response.role_id];
           
                 pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
@@ -456,7 +502,7 @@ function performActions(): void {
                   default: false,
                 },
               ])
-              .then((response) => {
+              .then((response: DeleteEmployee) => {
                 if (!response.confirm_delete) {
                   console.log('Employee deletion canceled.');
                   promptUser(); // Re-prompt the user
@@ -464,7 +510,7 @@ function performActions(): void {
                 }
           
                 const sql = 'DELETE FROM employees WHERE id = $1';
-                const values = [parseInt(response.employee_id)];
+                const values = [response.employee_id];
           
                 pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
@@ -491,7 +537,7 @@ function performActions(): void {
                   },
                 },
               ])
-              .then((response) => {
+              .then((response: ViewBudget) => {
                 const sql = `
                   SELECT 
                     d.department_name, 
@@ -501,7 +547,7 @@ function performActions(): void {
                   WHERE d.id = $1
                   GROUP BY d.id;
                 `;
-                const values = [parseInt(response.department_id)];
+                const values = [response.department_id];
           
                 pool.query(sql, values, (err: Error, result: QueryResult) => {
                   if (err) {
